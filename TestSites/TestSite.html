@@ -1,0 +1,179 @@
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta http-equiv="X-UA-Compatible" content="IE=edge">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<meta property="og:description" content="some content here"/>
+<link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/css/bootstrap.min.css" integrity="sha384-BVYiiSIFeK1dGmJRAkycuHAHRg32OmUcww7on3RYdg4Va+PmSTsz/K68vbdEjh4u" crossorigin="anonymous">
+
+<script src="https://ajax.googleapis.com/ajax/libs/jquery/1.12.4/jquery.min.js"></script>
+<script type="text/javascript">
+  (function(b,r,a,n,c,h,_,s,d,k){if(!b[n]||!b[n]._q){for(;s<_.length;)c(h,_[s++]);d=r.createElement(a);d.async=1;d.src="https://cdn.branch.io/branch-latest.min.js";k=r.getElementsByTagName(a)[0];k.parentNode.insertBefore(d,k);b[n]=h}})(window,document,"script","branch",function(b,r){b[r]=function(){b._q.push([r,arguments])}},{_q:[],_v:1},"addListener applyCode autoAppIndex banner closeBanner closeJourney creditHistory credits data deepview deepviewCta first getCode init link logout redeem referrals removeListener sendSMS setBranchViewData setIdentity track validateCode trackCommerceEvent logEvent disableTracking".split(" "), 0);
+
+  
+  branch.init('key_live_hkDytPACtipny3N9XmnbZlapBDdj4WIL', function(err, data) {
+  });
+  branch.setBranchViewData({
+    // data: {
+      // '$deeplink_path': 'picture/00000',
+      // 'picture_id': '00000'
+      '~channel': 'SetDataTest'
+    // }
+  });
+  // var thisListener = function(event, data) { 
+  //     sendData(event, data);
+  // }
+
+  // branch.addListener('didShowJourney', thisListener); //A listener for a Journey impression
+  function sendData (event, data) {
+    // var journey_variation = data.journey_link_data.tags;
+    // var journey_id = data.journey_link_data.journey_id;
+    // var journey_name = data.journey_link_data.journey_name;
+    // // var userId = dataLayer.userId;
+    // var classpass_id = "FOO" //REPLACE "FOO" WITH YOUR ID
+
+    // console.log(journey_variation, journey_id, journey_name);
+
+    // var custom_data = {
+    //   "variation": journey_variation,
+    //   "journey_id": journey_id,
+    //   "journey_name": journey_name,
+    //   "classpass_id": classpass_id
+    // }
+    branch.logEvent(
+      "homepage_view",
+      //custom_data,
+      function(err) { console.log(err);}
+    );
+  };
+
+    // branch.addListener('didClickJourneyCTA', thisListener); //A listener for clicking the Journeys CTA
+    
+    // branch.addListener('didClickJourneyClose', thisListener); //A listener for someone manually dismissing the Journey
+    //key_live_gchnKkd3l3m9YBPP2d73jmfejkcgVjgM - BMF key
+    //key_live_hkDytPACtipny3N9XmnbZlapBDdj4WIL - New BMF key
+    //key_live_abDcx0UFBho6naQKnmo9EpbcyEf3JoPR - Barstool key
+    //key_live_fenZBMQl4jmbe0EIQUnypnnlFqcu285V - RtR key
+    //key_live_phe4Yf3W3FgoUKMeZTbBRkaevveeJq6e - ClassPass key
+    // if (isIpad) {
+    //   branch.init('key_live_gchnKkd3l3m9YBPP2d73jmfejkcgVjgM', {
+    //   'no_journeys': true
+    //   });
+    // } else {
+      // branch.init('key_live_hkDytPACtipny3N9XmnbZlapBDdj4WIL');
+
+    // }
+    //this is just a fake check for which page in the session the user is at
+    // if (window.history.length < 3) {
+    //   //if it's less than the critical number, show whatever regular banner should show
+    //   branch.track('pageview');
+    // } else {
+    //   //if it's past the critical number, show the specific full page interstitial
+    //   branch.track('pageview', null, {'branch_view_id': '394166450845042691'});
+    // }
+
+  function setTheData () {
+    console.log("setting");
+    branch.closeJourney();
+    branch.setBranchViewData({
+      
+      data: {
+        // '$deeplink_path': 'picture/00000',
+        // 'picture_id': '00000'
+        '~campaign': 'SetDataTest'
+      }
+    });
+  };
+
+  function buyEvent () {
+    console.log("buying");
+    var commerce_data = {"revenue":28.45,
+      "currency":"USD",
+      "transaction_id":"313299",
+      "shipping":5.95,
+      "tax":0,
+      //"~referring_link":"379998049730159899",
+      "products":[{"sku":"xbar1788","name":"SAFTB Golf Towel - GOLF / SAFTB","price":25,"quantity":1,"category":"","variant":"GOLF / SAFTB"}]
+    };
+    var metadata =  {};
+    branch.trackCommerceEvent('purchase', commerce_data, metadata, function(err) {
+        if(err) {
+             throw err;
+        }
+    });
+  };
+  function showJourney () {
+    console.log("showing");
+    branch.init('key_live_gchnKkd3l3m9YBPP2d73jmfejkcgVjgM', function(err, data) {
+      branch.closeJourney(
+        function(err) { 
+          branch.track('pageview', null, {'branch_view_id': '411594526336324610'});
+          console.log(err); 
+        }
+      );
+      
+    });
+  };
+  function setTheIdentity () {
+    console.log("setting the identity");
+    var timestamp = Math.round(+new Date()/1000);
+    var id = timestamp.toString();
+    branch.setIdentity(id, function (err, data) {
+      console.log(err, data);
+    });
+    console.log(document.cookie);
+    // var name = "identity_id";
+    // var value = "; " + document.cookie;
+    // var parts = value.split("; " + name + "=");
+    // var readID = "";
+    // if (parts.length == 2) {
+    //   var readID = parts.pop().split(";").shift();
+    // }
+    // console.log("readID = " + readID);
+  };
+</script>
+<title>Tarek T</title>
+
+
+<link rel="stylesheet" type="text/css" href="css/bootstrap-theme.min.css">
+<link href="css/bootstrap.css" rel="stylesheet">
+
+</head>
+
+<body>
+
+	<div class="container">
+
+      <div class="row col-lg-8 col-lg-offset-2">
+      <h2>Tarek's Test Site</h2>
+    </div>
+    <section>
+      <div class="row col-lg-8 col-lg-offset-2">
+        <div class="group">
+         <h4>Set Data</h4>
+          <button class="btn btn-info" onclick="setTheData()">Set</button>
+        </div>
+      </div>
+      <div class="row col-lg-8 col-lg-offset-2">
+        <div class="group">
+         <h4>Buy!</h4>
+          <button class="btn btn-info" onclick="sendData()">Buy</button>
+        </div>
+      </div>
+      <div class="row col-lg-8 col-lg-offset-2">
+        <div class="group">
+         <h4>Show the Journey</h4>
+          <button class="btn btn-info" onclick="showJourney()">Show Journey</button>
+        </div>
+      </div>
+      <div class="row col-lg-8 col-lg-offset-2">
+        <div class="group">
+         <h4>Set the Identity</h4>
+          <button class="btn btn-info" onclick="setTheIdentity()">Set Identity</button>
+        </div>
+      </div>
+    </section>
+  </div>
+
+ </body>
+ </html>
