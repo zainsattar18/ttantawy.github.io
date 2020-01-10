@@ -48,13 +48,13 @@
             }
             var feature = "Email";
             
-            var cp_code = window.document.getElementById("cpCode").value;
-            if (!cp_code) {
-                // cp_code=""
-                alert("Please enter a CP Code.");
-                window.document.getElementById("cpCode").focus();
-                return
-            }
+            // var cp_code = window.document.getElementById("cpCode").value;
+            // if (!cp_code) {
+            //     // cp_code=""
+            //     alert("Please enter a CP Code.");
+            //     window.document.getElementById("cpCode").focus();
+            //     return
+            // }
             var color_style = original_url.substring(original_url.lastIndexOf("/") + 1, original_url.length);
             if(color_style.length < 12){
                 var deeplink_path = "x-callback-url/product-details?style-color=" + color_style
@@ -70,7 +70,7 @@
             var linkData = {
                 "feature": feature,
                 "channel": channel,
-                "campaign": cp_code,
+                // "campaign": cp_code,
                 "data": {
                     "$ios_url": ios,
                     "$android_url": android,
@@ -111,7 +111,7 @@
     <!-- Description for one-off link creation -->
     <section class="container toggle" id="description_oneoff">
         <p><ol>
-            <li><strong>[REQUIRED]</strong> Enter the web URL to convert and the CP Code</li>
+            <!-- <li><strong>[REQUIRED]</strong> Enter the web URL to convert and the CP Code</li> -->
             <li>Click "Create Member Unlock Link" to generate a Branch link</li>
             <li><strong>[To debug deep links]</strong> Add "?debug=1" to the link and paste it into the browser</li>
             <li>Expected behavior: If the app is installed, the link launches the app and routes to a PDP. If the app is not installed or user is on non-mobile device, link routes to the PDP on web.</li>
@@ -133,9 +133,8 @@
             </tbody>
         </table>
 
-        <h3 class="toggle">Configure Link Behavior</h3>
+       <!--  <h3 class="toggle">Configure Link Behavior</h3>
 
-        <!-- Deep linking parameters table -->
         <table id="redirect_params" class="toggle">
             <tr id="row-1">
                 <td><label style="margin-right: 10px">Enter the CP Code</label></td>
@@ -143,7 +142,7 @@
                     <input class="form-control" style="width:500px" id="cpCode" type="text"/>
                 </td>
             </tr>
-        </table>
+        </table> -->
         <br>
 
     </section>
