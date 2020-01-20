@@ -28,6 +28,7 @@
 
     <!-- Branch web SDK -->
     <script type="text/javascript">
+    //Initialize the Branch SDK
     (function(b,r,a,n,c,h,_,s,d,k){if(!b[n]||!b[n]._q){for(;s<_.length;)c(h,_[s++]);d=r.createElement(a);d.async=1;d.src="https://cdn.branch.io/branch-latest.min.js";k=r.getElementsByTagName(a)[0];k.parentNode.insertBefore(d,k);b[n]=h}})(window,document,"script","branch",function(b,r){b[r]=function(){b._q.push([r,arguments])}},{_q:[],_v:1},"addListener applyCode autoAppIndex banner closeBanner closeJourney creditHistory credits data deepview deepviewCta first getCode init link logout redeem referrals removeListener sendSMS setBranchViewData setIdentity track validateCode trackCommerceEvent logEvent disableTracking getBrowserFingerprintId".split(" "), 0);
     branch.init('key_live_lgA7hM2dXL7OvAPCPXr5AmhjvDeljGUh', function(err, data) {});
     </script>
@@ -36,41 +37,39 @@
     <!-- Script to generate short links based on user inputs -->
     <script>
         function generateLink() {
+            // Set and validate the Nike PDP Web URL.
             var original_url = window.document.getElementById("originalUrl").value;
             if (!original_url) {
                 alert("Please enter a destination URL.");
                 window.document.getElementById("originalUrl").focus();
                 return
-            } else if (original_url.includes("nike.app.link")) {
+            } else if (original_url.includes("app.link")) {
                 alert("Links should not redirect to another Branch link.");
                 window.document.getElementById("originalUrl").focus();
                 return
             }
-            var feature = "Email";
             
-            // var cp_code = window.document.getElementById("cpCode").value;
-            // if (!cp_code) {
-            //     // cp_code=""
-            //     alert("Please enter a CP Code.");
-            //     window.document.getElementById("cpCode").focus();
-            //     return
-            // }
+            //Pull the Color Style for the deeplink_path aka x-callback url
             var color_style = original_url.substring(original_url.lastIndexOf("/") + 1, original_url.length);
             if(color_style.length < 12){
                 var deeplink_path = "x-callback-url/product-details?style-color=" + color_style
-                console.log(deeplink_path);
+                // console.log(deeplink_path);
             } else {
-                var deeplink_path = "x-callback-url/product-details?style-color=" + color_style
-                alert("Please make sure that " + color_style + " is a valid Color Style.");
+                // var deeplink_path = "x-callback-url/product-details?style-color=" + color_style
+                alert("'" + color_style + "' does not seem like a valid Color Style. Please make sure the PDP link you are using has a valid Color Style appended.");
             };
 
+            //Set channel from input
             var channel = "Member Unlock Email";
+            
+            //Set iOS and Android fallbacks (defaults to web PDP URL)
             ios=original_url;
             android=original_url;
+
+            //Define link data
             var linkData = {
-                "feature": feature,
+                "feature": "Email",
                 "channel": channel,
-                // "campaign": cp_code,
                 "data": {
                     "$ios_url": ios,
                     "$android_url": android,
@@ -83,6 +82,8 @@
                     "$deeplink_path":deeplink_path
                 }
             };
+
+            //Make call to create link
             branch.link(linkData, function(err, link) {
                 if (err == null) {
                     console.log(link);
@@ -111,7 +112,6 @@
     <!-- Description for one-off link creation -->
     <section class="container toggle" id="description_oneoff">
         <p><ol>
-            <!-- <li><strong>[REQUIRED]</strong> Enter the web URL to convert and the CP Code</li> -->
             <li>Click "Create Member Unlock Link" to generate a Branch link</li>
             <li><strong>[To debug deep links]</strong> Add "?debug=1" to the link and paste it into the browser</li>
             <li>Expected behavior: If the app is installed, the link launches the app and routes to a PDP. If the app is not installed or user is on non-mobile device, link routes to the PDP on web.</li>
@@ -132,17 +132,6 @@
                 </tr>
             </tbody>
         </table>
-
-       <!--  <h3 class="toggle">Configure Link Behavior</h3>
-
-        <table id="redirect_params" class="toggle">
-            <tr id="row-1">
-                <td><label style="margin-right: 10px">Enter the CP Code</label></td>
-                <td>
-                    <input class="form-control" style="width:500px" id="cpCode" type="text"/>
-                </td>
-            </tr>
-        </table> -->
         <br>
 
     </section>
