@@ -37,6 +37,16 @@
     <!-- Script to generate short links based on user inputs -->
     <script>
         function generateLink() {
+            //Set channel from input
+            var channel = "Member Unlock Email";
+
+            //Set and validate region
+            var region = window.document.getElementById("region-selected").value;
+            if (region != "notSelected"){
+                channel = region;
+            }
+            console.log(channel);
+
             // Set and validate the Nike PDP Web URL.
             var original_url = window.document.getElementById("originalUrl").value;
             if (!original_url) {
@@ -58,13 +68,11 @@
                 // var deeplink_path = "x-callback-url/product-details?style-color=" + color_style
                 alert("'" + color_style + "' does not seem like a valid Color Style. Please make sure the PDP link you are using has a valid Color Style appended.");
             };
-
-            //Set channel from input
-            var channel = "Member Unlock Email";
             
             //Set iOS and Android fallbacks (defaults to web PDP URL)
             ios=original_url;
             android=original_url;
+
 
             //Define link data
             var linkData = {
@@ -82,6 +90,7 @@
                     "$deeplink_path":deeplink_path
                 }
             };
+            console.log(linkData);
 
             //Make call to create link
             branch.link(linkData, function(err, link) {
@@ -133,6 +142,20 @@
             </tbody>
         </table>
         <br>
+        <h3 class="toggle">Set Region Tag</h3>
+        <table>
+            <tbody>
+                <tr class="toggle">
+                    <select id='region-selected'>
+                        <option value="notSelected">--</option>
+                        <option value="NA Membership E-mail">North America</option>
+                        <option value="JP Membership E-mail">Japan</option>
+                        <option value="GC Membership E-mail">GC</option>
+                        <option value="EMEA Membership E-mail">EMEA</option>
+                    </select>
+                </tr>
+            </tbody>
+        
 
     </section>
 
