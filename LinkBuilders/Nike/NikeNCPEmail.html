@@ -49,10 +49,11 @@
             
             var feature = "Email Amazon SES";
             var channel = "Email"
-            if (window.document.getElementById('$ios_url')){
+            var app_stores_display = window.document.getElementById('redirect_params').style.display;
+            if (app_stores_display == 'inline' && window.document.getElementById('$ios_url')){
                 var ios = window.document.getElementById('$ios_url').value;
             } else {ios=original_url}
-            if (window.document.getElementById('$android_url')){
+            if (app_stores_display == 'inline' && window.document.getElementById('$android_url')){
                 var android = window.document.getElementById('$android_url').value;
             } else {android=original_url}
             var linkData = {
