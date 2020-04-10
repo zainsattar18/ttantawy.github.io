@@ -49,13 +49,13 @@
             }
 
             //get the x-callback-url and delete it if it's a PDP. These params are already hosted on the site so need to make sure we don't override the valid ones that are hosted.
-            var deeplink_path = window.document.getElementById('deeplinkPath').value
+            var deeplink_path = window.document.getElementById('deeplinkPath').value;
             if (window.document.getElementById('page-type-selected').value == 'pdp'){
                 deeplink_path = "";
             }
             
-            //validate that the x-callback-url isn't obviously broken
-            if (deeplink_path.endsWith("=") || deeplink_path.endsWith("/")) {
+            //alert if the x-callback-url isn't obviously broken
+            if (isInvalidDeeplinkPath(deeplink_path)) {
                 alert("Please enter a valid x-callback-url.");
                 window.document.getElementById("deeplinkPath").focus();
                 return
@@ -91,19 +91,29 @@
             if (deeplink_path != '') {
                 linkData.data['$deeplink_path'] = deeplink_path;
             }
+            // if we have a valid page type, add it to the link data
+            var sel = window.document.getElementById('page-type-selected')
+            var tag = sel.options[sel.selectedIndex].text;
+            if (tag != null && tag != ""){
+                var tags = [tag];
+                linkData['tags'] = tags;
+                console.log(linkData);
+            }
 
             //make the link
             branch.link(linkData, function(err, link) {
                 if (err == null) {
                     document.getElementById('generated3PLink').value = link;
-                    validateDeeplinkPath(link);
+                    validateDeeplinkPathInResponse(link); // alert the user if the link has no deeplink_path
                 } else {
                     document.getElementById('generated3PLink').value = err;
                 }
             });
         }
+
+        //======== Useful functions =========
         // checks the branch link for an x-callback-url
-        function validateDeeplinkPath(link){
+        function validateDeeplinkPathInResponse(link){
             var requestUrl = 'https://api2.branch.io/v1/url?url=' + link + '&branch_key=key_live_lgA7hM2dXL7OvAPCPXr5AmhjvDeljGUh';
             $.ajax({
                 method: 'GET',
@@ -117,6 +127,11 @@
                     }
                 }
             );
+        }
+
+        //check if the deeplink_path is obviously wrong
+        function isInvalidDeeplinkPath(value){
+            return (value.includes(" ") || value.endsWith("=") || value.endsWith("/"));
         }
     </script>
     <script type="text/javascript">
@@ -135,13 +150,12 @@
         }
         //only show the x-callback-url input if it's necessary
         function adjustDeeplinkPathRow(pageType){
-            console.log(pageType);
-            if (pageType.endsWith("=") || pageType.endsWith("/")) {
+            if (isInvalidDeeplinkPath(pageType)) {
                 window.document.getElementById('deeplinkPath').value = pageType;
                 window.document.getElementById('deeplink_path_input_table').style.display = "inline";
             } else {
                 window.document.getElementById('deeplink_path_input_table').style.display = "none";
-                window.document.getElementById('deeplinkPath').value = "";
+                window.document.getElementById('deeplinkPath').value = pageType;
             }
         }
     </script>
@@ -177,8 +191,10 @@
             <tbody>
                 <tr class="toggle">
                     <select id='page-type-selected' onchange="adjustDeeplinkPathRow(this.value)">
-                        <option value="pdp">PDP</option>
-                        <option value="x-callback-url/facet-search?name=">Gridwall</option>
+                        <option value="pdp">Live PDP</option>
+                        <option value="x-callback-url/product-details?style-color=[Add Style-Color Code]">Non-live PDP</option>
+                        <option value="x-callback-url/facet-search?name=[Add Product Wall Name]&hash=[Add Hash Value]">Product Wall (PW)</option>
+                        <option value="x-callback-url/facet-search?name=[Add Product Wall Name]&conceptid=[Add Hash Value]">Cloud Product Wall (PW)</option>
                         <option value="x-callback-url/display-thread?thread-id=">Editorial Thread</option>
                         <option value="x-callback-url/feed">User's Feed</option>
                         <option value="x-callback-url/cart">User's Cart</option>
@@ -203,7 +219,7 @@
             <tbody>
                 <tr class="toggle">
                     <td><label style="margin-right: 10px;width:150px">Enter a web URL</label></td>
-                    <td><input class="form-control" style="width:500px" id="originalUrl" type="text" placeholder="i.e., https://www.nike.com/t/air-jordan-4-retro-flyknit-mens-shoe-vTzTNn/AQ3559-600"/></td>
+                    <td><input class="form-control" style="width:500px" id="originalUrl" type="text" placeholder="i.e., https://www.nike.com/t/air-jordan-7-retro-se-shoe-HVxKJm/CT8528-002"/></td>
                 </tr>
             </tbody>
         </table>
