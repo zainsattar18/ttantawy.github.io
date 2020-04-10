@@ -1,7 +1,7 @@
 <!DOCTYPE html>
 <html>
 <head>
-    <title>NIKE SOCIAL LINK CREATOR</title>
+    <title>NIKE MEMBER UNLOCK LINK CREATOR</title>
     <link rel="icon" href="https://branch.io/img/press/kit/badge-black.png" />
     <link rel="stylesheet" href="style.css" />
 
@@ -28,6 +28,7 @@
 
     <!-- Branch web SDK -->
     <script type="text/javascript">
+    //Initialize the Branch SDK
     (function(b,r,a,n,c,h,_,s,d,k){if(!b[n]||!b[n]._q){for(;s<_.length;)c(h,_[s++]);d=r.createElement(a);d.async=1;d.src="https://cdn.branch.io/branch-latest.min.js";k=r.getElementsByTagName(a)[0];k.parentNode.insertBefore(d,k);b[n]=h}})(window,document,"script","branch",function(b,r){b[r]=function(){b._q.push([r,arguments])}},{_q:[],_v:1},"addListener applyCode autoAppIndex banner closeBanner closeJourney creditHistory credits data deepview deepviewCta first getCode init link logout redeem referrals removeListener sendSMS setBranchViewData setIdentity track validateCode trackCommerceEvent logEvent disableTracking getBrowserFingerprintId".split(" "), 0);
     branch.init('key_live_lgA7hM2dXL7OvAPCPXr5AmhjvDeljGUh', function(err, data) {});
     </script>
@@ -36,59 +37,62 @@
     <!-- Script to generate short links based on user inputs -->
     <script>
         function generateLink() {
+            //Set channel from input
+            var channel = "Member Unlock Email";
+
+            //Set and validate region
+            var region = window.document.getElementById("region-selected").value;
+            if (region != "notSelected"){
+                channel = region;
+            }
+            console.log(channel);
+
+            // Set and validate the Nike PDP Web URL.
             var original_url = window.document.getElementById("originalUrl").value;
             if (!original_url) {
                 alert("Please enter a destination URL.");
                 window.document.getElementById("originalUrl").focus();
                 return
-            } else if (original_url.includes("nike.app.link")) {
+            } else if (original_url.includes("app.link")) {
                 alert("Links should not redirect to another Branch link.");
                 window.document.getElementById("originalUrl").focus();
                 return
             }
-            var title = window.document.getElementById('title').value;
-            if (!title) {
-                alert("Please enter a link title.");
-                window.document.getElementById("title").focus();
-                return
-            }
-            var queryLogic = "?"
-            var feature = "Social";
             
-            var channel = window.document.getElementById('channel').value;
-            var cp_code = window.document.getElementById('cp_code').value;
-            if (cp_code){
-                if (original_url.indexOf("?")>0){queryLogic = '&';};
-                original_url = original_url + queryLogic + "cp=" + cp_code;
-            }
-            // if (utm_source){
-            //     if (original_url.indexOf("?")>0){queryLogic = '&';};
-            //     original_url = original_url + queryLogic + "utm_source=" + utm_source;
-            // }
-            // if (utm_content){
-            //     if (original_url.indexOf("?")>0){queryLogic = '&';};
-            //     original_url = original_url + queryLogic + "utm_content=" + utm_content;
-            // }
-            if (window.document.getElementById('$ios_url')){
-                var ios = window.document.getElementById('$ios_url').value;
-            } else {ios=original_url}
-            if (window.document.getElementById('$android_url')){
-                var android = window.document.getElementById('$android_url').value;
-            } else {android=original_url}
+            //Pull the Color Style for the deeplink_path aka x-callback url
+            var color_style = original_url.substring(original_url.lastIndexOf("/") + 1, original_url.length);
+            if(color_style.length < 12){
+                var deeplink_path = "x-callback-url/product-details?style-color=" + color_style
+                // console.log(deeplink_path);
+            } else {
+                // var deeplink_path = "x-callback-url/product-details?style-color=" + color_style
+                alert("'" + color_style + "' does not seem like a valid Color Style. Please make sure the PDP link you are using has a valid Color Style appended.");
+            };
+            
+            //Set iOS and Android fallbacks (defaults to web PDP URL)
+            ios=original_url;
+            android=original_url;
+
+
+            //Define link data
             var linkData = {
-                feature: feature,
-                channel: channel,
-                campaign: cp_code,
-                data: {
+                "feature": "Email",
+                "channel": channel,
+                "data": {
                     "$ios_url": ios,
                     "$android_url": android,
-                    "$canonical_url": original_url,
                     "$desktop_url": original_url,
-                    "cp_code": cp_code,
-                    "type" : 2,
-                    "$marketing_title" : title
+                    "$fallback_url": original_url,
+                    "$canonical_url": original_url,
+                    "$og_title" : "Nike",
+                    "$uri_redirect_mode":2,
+                    "$3p":"e_salesforce2",
+                    "$deeplink_path":deeplink_path
                 }
             };
+            console.log(linkData);
+
+            //Make call to create link
             branch.link(linkData, function(err, link) {
                 if (err == null) {
                     console.log(link);
@@ -98,14 +102,6 @@
                     document.getElementById('generated3PLink').value = err;
                 }
             });
-        }
-        // Removes a row
-        function removeRow() {
-            rowCount = window.document.getElementById('redirect_params').rows.length;
-            if (rowCount > 1) {
-                $(`#row-${rowCount}`).remove();
-                $(`#row-${window.document.getElementById('redirect_params').rows.length}`).remove();
-            }
         }
         </script>
 </head>
@@ -119,23 +115,22 @@
         <img src="https://branch.io/img/logo-dark.svg" style="width:100px;">
         </br>
         </br>
-        <h1 style="display:inline; vertical-align:middle">Nike Social Link Creator</h1>
+        <h1 style="display:inline; vertical-align:middle">Nike Member Unlock Link Creator</h1>
     </div>
 
     <!-- Description for one-off link creation -->
     <section class="container toggle" id="description_oneoff">
         <p><ol>
-            <li><strong>[REQUIRED]</strong> Enter the web URL to convert and the CP Code</li>
-            <li><strong>[OPTIONAL]</strong> To send mobile users without the app to web, click "Remove App Store redirects"</li>
-            <li>Click "Create Social Link" to generate a Branch link</li>
-            <li><strong>[To debug deep links]</strong> Add "?debug=1" to the link and paste it into the browser</li>
+            <li>Click "Create Member Unlock Link" to generate a Branch link</li>
+            <li>Expected behavior: If the app is installed, the link launches the app and routes to a PDP. If the app is not installed or user is on non-mobile device, link routes to the PDP on web.</li>
+            
         </ol></p>
     </section>
 
     <section class="container" id="link-creation">
         <!-- Table for user input -->
 
-        <h3 class="toggle">Set URL</h3>
+        <h3 class="toggle">Set Web URL</h3>
 
         <table>
             <tbody>
@@ -143,41 +138,36 @@
                     <td><label style="margin-right: 10px">Enter a web URL</label></td>
                     <td><input class="form-control" style="width:500px" id="originalUrl" type="text" placeholder="i.e., https://www.nike.com/t/air-jordan-4-retro-flyknit-mens-shoe-vTzTNn/AQ3559-600"/></td>
                 </tr>
+            </tbody>
+        </table>
+        <br>
+        <h3 class="toggle">Set Region Tag</h3>
+        <table>
+            <tbody>
                 <tr class="toggle">
-                    <td><label style="margin-right: 10px">Enter The Title</label></td>
-                    <td><input class="form-control" style="width:500px" id="title" type="text" placeholder="i.e., AJ4 9.7"/></td>
+                    <select id='region-selected'>
+                        <option value="notSelected">--</option>
+                        <option value="NA Membership E-mail">North America</option>
+                        <option value="JP Membership E-mail">Japan</option>
+                        <option value="GC Membership E-mail">GC</option>
+                        <option value="EMEA Membership E-mail">EMEA</option>
+                    </select>
                 </tr>
             </tbody>
         </table>
-
-        <h3 class="toggle">Configure Link Behavior</h3>
-
-        <!-- Deep linking parameters table -->
-        <table id="redirect_params" class="toggle">
-            <tr id="row-1">
-                <td><label style="margin-right: 10px">Android redirect</label></td>
-                <td><input class="form-control" style="width:500px" id="$android_url" type="text" value="https://play.google.com/store/apps/details?id=com.nike.omega"/></td>
-            </tr>
-            <tr id="row-2">
-                <td><label style="margin-right: 10px">iOS redirect</label></td>
-                <td><input class="form-control" style="width:500px" id="$ios_url" type="text" value="https://apps.apple.com/us/app/nike/id1095459556"/></td>
-            </tr>
-        </table>
-
-        <button class="btn toggle" id="remove-query-button" style="background-color:#d3d3d3; display:inline; margin-top: 5px;" onclick="removeRow()">Remove App Store redirects</button>
-        <br>
+        
 
     </section>
 
     <section>
         <br>
         <br>
-        <div class="text-center"><button class="form-control toggle" style="float:none; background-color:#89cff0; color: white; font-weight: bold;" onclick="generateLink()">Create Social Link</button></div>
+        <div class="text-center"><button class="form-control toggle" style="float:none; background-color:#89cff0; color: white; font-weight: bold;" onclick="generateLink()">Create Member Unlock Link</button></div>
         <br>
     </section>
 
     <section class="container toggle" id="linkOutput">
-        <h3>Generated Social Link
+        <h3>Generated Member Unlock Link
         <button class="btn" id="copy-button" style="background-color:#d3d3d3; display:inline;" data-clipboard-target="#generated3PLink">Copy Link</button>
         </h3>
         <textarea class="form-control" style="height:100px; margin-bottom:5%;" id="generated3PLink" type="text"></textarea>

@@ -1,7 +1,7 @@
 <!DOCTYPE html>
 <html>
 <head>
-    <title>NIKE SOCIAL LINK CREATOR</title>
+    <title>NIKE NCP EMAIL LINK CREATOR</title>
     <link rel="icon" href="https://branch.io/img/press/kit/badge-black.png" />
     <link rel="stylesheet" href="style.css" />
 
@@ -46,29 +46,9 @@
                 window.document.getElementById("originalUrl").focus();
                 return
             }
-            var title = window.document.getElementById('title').value;
-            if (!title) {
-                alert("Please enter a link title.");
-                window.document.getElementById("title").focus();
-                return
-            }
-            var queryLogic = "?"
-            var feature = "Social";
             
-            var channel = window.document.getElementById('channel').value;
-            var cp_code = window.document.getElementById('cp_code').value;
-            if (cp_code){
-                if (original_url.indexOf("?")>0){queryLogic = '&';};
-                original_url = original_url + queryLogic + "cp=" + cp_code;
-            }
-            // if (utm_source){
-            //     if (original_url.indexOf("?")>0){queryLogic = '&';};
-            //     original_url = original_url + queryLogic + "utm_source=" + utm_source;
-            // }
-            // if (utm_content){
-            //     if (original_url.indexOf("?")>0){queryLogic = '&';};
-            //     original_url = original_url + queryLogic + "utm_content=" + utm_content;
-            // }
+            var feature = "Email Amazon SES";
+            var channel = "Email"
             if (window.document.getElementById('$ios_url')){
                 var ios = window.document.getElementById('$ios_url').value;
             } else {ios=original_url}
@@ -78,15 +58,12 @@
             var linkData = {
                 feature: feature,
                 channel: channel,
-                campaign: cp_code,
                 data: {
                     "$ios_url": ios,
                     "$android_url": android,
                     "$canonical_url": original_url,
                     "$desktop_url": original_url,
-                    "cp_code": cp_code,
-                    "type" : 2,
-                    "$marketing_title" : title
+                    "3p":"e_as",
                 }
             };
             branch.link(linkData, function(err, link) {
@@ -99,13 +76,16 @@
                 }
             });
         }
-        // Removes a row
+        // Adds the platform-specific rows
+        function addRow() {
+            window.document.getElementById('redirect_params').style.display = "inline";
+            window.document.getElementById('remove-query-button').style.display = "inline";
+            window.document.getElementById('add-query-button').style.display = "none";
+        }
         function removeRow() {
-            rowCount = window.document.getElementById('redirect_params').rows.length;
-            if (rowCount > 1) {
-                $(`#row-${rowCount}`).remove();
-                $(`#row-${window.document.getElementById('redirect_params').rows.length}`).remove();
-            }
+            window.document.getElementById('redirect_params').style.display = "none";
+            window.document.getElementById('remove-query-button').style.display = "none";
+            window.document.getElementById('add-query-button').style.display = "inline";
         }
         </script>
 </head>
@@ -119,16 +99,16 @@
         <img src="https://branch.io/img/logo-dark.svg" style="width:100px;">
         </br>
         </br>
-        <h1 style="display:inline; vertical-align:middle">Nike Social Link Creator</h1>
+        <h1 style="display:inline; vertical-align:middle">Nike NCP Email Link Creator</h1>
     </div>
 
     <!-- Description for one-off link creation -->
     <section class="container toggle" id="description_oneoff">
         <p><ol>
             <li><strong>[REQUIRED]</strong> Enter the web URL to convert and the CP Code</li>
-            <li><strong>[OPTIONAL]</strong> To send mobile users without the app to web, click "Remove App Store redirects"</li>
-            <li>Click "Create Social Link" to generate a Branch link</li>
-            <li><strong>[To debug deep links]</strong> Add "?debug=1" to the link and paste it into the browser</li>
+            <li><strong>[OPTIONAL]</strong> To send mobile users without the app to App Store, click "Use App Store redirects"</li>
+            <li>Click "Create Email Link" to generate a Branch link</li>
+            <li><strong>[To debug deep links]</strong> Log into the Branch Dashboard, Add "?debug=1" to the link and paste it into the browser.</li>
         </ol></p>
     </section>
 
@@ -143,17 +123,13 @@
                     <td><label style="margin-right: 10px">Enter a web URL</label></td>
                     <td><input class="form-control" style="width:500px" id="originalUrl" type="text" placeholder="i.e., https://www.nike.com/t/air-jordan-4-retro-flyknit-mens-shoe-vTzTNn/AQ3559-600"/></td>
                 </tr>
-                <tr class="toggle">
-                    <td><label style="margin-right: 10px">Enter The Title</label></td>
-                    <td><input class="form-control" style="width:500px" id="title" type="text" placeholder="i.e., AJ4 9.7"/></td>
-                </tr>
             </tbody>
         </table>
 
         <h3 class="toggle">Configure Link Behavior</h3>
 
         <!-- Deep linking parameters table -->
-        <table id="redirect_params" class="toggle">
+        <table id="redirect_params" class="toggle" style="display: none">
             <tr id="row-1">
                 <td><label style="margin-right: 10px">Android redirect</label></td>
                 <td><input class="form-control" style="width:500px" id="$android_url" type="text" value="https://play.google.com/store/apps/details?id=com.nike.omega"/></td>
@@ -164,7 +140,8 @@
             </tr>
         </table>
 
-        <button class="btn toggle" id="remove-query-button" style="background-color:#d3d3d3; display:inline; margin-top: 5px;" onclick="removeRow()">Remove App Store redirects</button>
+        <button class="btn toggle" id="add-query-button" style="background-color:#d3d3d3; display:inline; margin-top: 5px;" onclick="addRow()">Use App Store redirects</button>
+        <button class="btn toggle" id="remove-query-button" style="background-color:#d3d3d3; display:none; margin-top: 5px;" onclick="removeRow()">Remove App Store redirects</button>
         <br>
 
     </section>
@@ -172,12 +149,12 @@
     <section>
         <br>
         <br>
-        <div class="text-center"><button class="form-control toggle" style="float:none; background-color:#89cff0; color: white; font-weight: bold;" onclick="generateLink()">Create Social Link</button></div>
+        <div class="text-center"><button class="form-control toggle" style="float:none; background-color:#89cff0; color: white; font-weight: bold;" onclick="generateLink()">Create Email Link</button></div>
         <br>
     </section>
 
     <section class="container toggle" id="linkOutput">
-        <h3>Generated Social Link
+        <h3>Generated Email Link
         <button class="btn" id="copy-button" style="background-color:#d3d3d3; display:inline;" data-clipboard-target="#generated3PLink">Copy Link</button>
         </h3>
         <textarea class="form-control" style="height:100px; margin-bottom:5%;" id="generated3PLink" type="text"></textarea>
