@@ -36,6 +36,7 @@
     <!-- Script to generate short links based on user inputs -->
     <script>
         function generateLink() {
+            //grab the web url and validate that it exists and isn't another branch link
             var original_url = window.document.getElementById("originalUrl").value;
             if (!original_url) {
                 alert("Please enter a destination URL.");
@@ -46,9 +47,25 @@
                 window.document.getElementById("originalUrl").focus();
                 return
             }
+
+            //get the x-callback-url and delete it if it's a PDP. These params are already hosted on the site so need to make sure we don't override the valid ones that are hosted.
+            var deeplink_path = window.document.getElementById('deeplinkPath').value
+            if (window.document.getElementById('page-type-selected').value == 'pdp'){
+                deeplink_path = "";
+            }
             
+            //validate that the x-callback-url isn't obviously broken
+            if (deeplink_path.endsWith("=") || deeplink_path.endsWith("/")) {
+                alert("Please enter a valid x-callback-url.");
+                window.document.getElementById("deeplinkPath").focus();
+                return
+            }
+
+            //set the analytics parameters
             var feature = "Email Amazon SES";
             var channel = "Email"
+
+            //set the platform-specific redirects if they exist
             var app_stores_display = window.document.getElementById('redirect_params').style.display;
             if (app_stores_display == 'inline' && window.document.getElementById('$ios_url')){
                 var ios = window.document.getElementById('$ios_url').value;
@@ -56,6 +73,8 @@
             if (app_stores_display == 'inline' && window.document.getElementById('$android_url')){
                 var android = window.document.getElementById('$android_url').value;
             } else {android=original_url}
+            
+            //set the link data
             var linkData = {
                 feature: feature,
                 channel: channel,
@@ -64,31 +83,68 @@
                     "$android_url": android,
                     "$canonical_url": original_url,
                     "$desktop_url": original_url,
-                    "3p":"e_as",
+                    "3p":"e_as"
                 }
             };
+
+            //if we have a valid x-callback-url, add it to the link data
+            if (deeplink_path != '') {
+                linkData.data['$deeplink_path'] = deeplink_path;
+            }
+
+            //make the link
             branch.link(linkData, function(err, link) {
                 if (err == null) {
-                    console.log(link);
                     document.getElementById('generated3PLink').value = link;
+                    validateDeeplinkPath(link);
                 } else {
-                    console.log(err);
                     document.getElementById('generated3PLink').value = err;
                 }
             });
         }
+        // checks the branch link for an x-callback-url
+        function validateDeeplinkPath(link){
+            var requestUrl = 'https://api2.branch.io/v1/url?url=' + link + '&branch_key=key_live_lgA7hM2dXL7OvAPCPXr5AmhjvDeljGUh';
+            $.ajax({
+                method: 'GET',
+                url: requestUrl
+                })
+                .done(function( msg ) {
+                    var returned_deeplink_path = msg['data']['$deeplink_path'];
+                    if (!returned_deeplink_path){
+                        alert("This link has no x-callback-url. It will not take a user to a specific place in the app.");
+                        window.document.getElementById("originalUrl").focus();
+                    }
+                }
+            );
+        }
+    </script>
+    <script type="text/javascript">
+
         // Adds the platform-specific rows
         function addRow() {
             window.document.getElementById('redirect_params').style.display = "inline";
             window.document.getElementById('remove-query-button').style.display = "inline";
             window.document.getElementById('add-query-button').style.display = "none";
         }
+        //removes the platform-specific rows
         function removeRow() {
             window.document.getElementById('redirect_params').style.display = "none";
             window.document.getElementById('remove-query-button').style.display = "none";
             window.document.getElementById('add-query-button').style.display = "inline";
         }
-        </script>
+        //only show the x-callback-url input if it's necessary
+        function adjustDeeplinkPathRow(pageType){
+            console.log(pageType);
+            if (pageType.endsWith("=") || pageType.endsWith("/")) {
+                window.document.getElementById('deeplinkPath').value = pageType;
+                window.document.getElementById('deeplink_path_input_table').style.display = "inline";
+            } else {
+                window.document.getElementById('deeplink_path_input_table').style.display = "none";
+                window.document.getElementById('deeplinkPath').value = "";
+            }
+        }
+    </script>
 </head>
 
 <body class="container">
@@ -116,14 +172,47 @@
 
     <section class="container" id="link-creation">
         <!-- Table for user input -->
-
-        <h3 class="toggle">Set URL</h3>
-
+        <h3 class="toggle">Choose the page type</h3>
         <table>
             <tbody>
                 <tr class="toggle">
-                    <td><label style="margin-right: 10px">Enter a web URL</label></td>
-                    <td><input class="form-control" style="width:500px" id="originalUrl" type="text" value="https://www.nike.com/t/air-jordan-4-retro-flyknit-mens-shoe-vTzTNn/AQ3559-600"/></td>
+                    <select id='page-type-selected' onchange="adjustDeeplinkPathRow(this.value)">
+                        <option value="pdp">PDP</option>
+                        <option value="x-callback-url/facet-search?name=">Gridwall</option>
+                        <option value="x-callback-url/display-thread?thread-id=">Editorial Thread</option>
+                        <option value="x-callback-url/feed">User's Feed</option>
+                        <option value="x-callback-url/cart">User's Cart</option>
+                        <option value="x-callback-url/favorites">User's Favorites</option>
+                        <option value="x-callback-url/1-1-appt">Book a 1:1</option>
+                        <option value="x-callback-url/events/cities">Events</option>
+                        <option value="x-callback-url/send-feedback">Send Feedback Screen</option>
+                        <option value="x-callback-url/store-locator">Store Locator Landing Screen</option>
+                        <option value="x-callback-url/profile/member_card">Member Pass</option>
+                        <option value="x-callback-url/shop">Shop Landing Screen</option>
+                        <option value="x-callback-url/interests">View All Interests</option>
+                        <option value="x-callback-url/inbox">Top of Inbox</option>
+                        <option value="x-callback-url/">Other</option>
+                    </select>
+                </tr>
+            </tbody>
+        </table>
+        <br>
+        <h3 class="toggle">Set URL</h3>
+        <br>
+        <table id="url_input_table" >
+            <tbody>
+                <tr class="toggle">
+                    <td><label style="margin-right: 10px;width:150px">Enter a web URL</label></td>
+                    <td><input class="form-control" style="width:500px" id="originalUrl" type="text" value="https://www.nike.com/t/exp-x14-mens-shoe-78RMfJ"/></td>
+                </tr>
+            </tbody>
+        </table>
+        <br>
+        <table id="deeplink_path_input_table"  style="display: none">
+            <tbody>
+                <tr class="toggle" >
+                    <td><label style="margin-right: 10px;width:150px">Enter x-callback-url</label></td>
+                    <td><input class="form-control" style="width:500px" id="deeplinkPath" type="text" value="x-callback-url/"/></td>
                 </tr>
             </tbody>
         </table>
@@ -133,16 +222,17 @@
         <!-- Deep linking parameters table -->
         <table id="redirect_params" class="toggle" style="display: none">
             <tr id="row-1">
-                <td><label style="margin-right: 10px">Android redirect</label></td>
+                <td><label style="margin-right: 10px;width:150px">Android redirect</label></td>
                 <td><input class="form-control" style="width:500px" id="$android_url" type="text" value="https://play.google.com/store/apps/details?id=com.nike.omega"/></td>
             </tr>
             <tr id="row-2">
-                <td><label style="margin-right: 10px">iOS redirect</label></td>
+                <td><label style="margin-right: 10px;width:150px">iOS redirect</label></td>
                 <td><input class="form-control" style="width:500px" id="$ios_url" type="text" value="https://apps.apple.com/us/app/nike/id1095459556"/></td>
             </tr>
         </table>
-
+        <br>
         <button class="btn toggle" id="add-query-button" style="background-color:#d3d3d3; display:inline; margin-top: 5px;" onclick="addRow()">Use App Store redirects</button>
+        <br>
         <button class="btn toggle" id="remove-query-button" style="background-color:#d3d3d3; display:none; margin-top: 5px;" onclick="removeRow()">Remove App Store redirects</button>
         <br>
 
@@ -151,7 +241,7 @@
     <section>
         <br>
         <br>
-        <div class="text-center"><button class="form-control toggle" style="float:none; background-color:#89cff0; color: white; font-weight: bold;" onclick="generateLink()">Create Email Link</button></div>
+        <div class="text-center"><button class="form-control toggle" style="float:none; background-color:#0075c9; color: white; font-weight: bold;" onclick="generateLink()">Create Email Link</button></div>
         <br>
     </section>
 
