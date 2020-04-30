@@ -36,21 +36,16 @@
     <!-- Script to generate short links based on user inputs -->
     <script>
         function generateLink() {
-            //grab the web url and validate that it exists and isn't another branch link
+            //check if the web link is valid:
             var original_url = window.document.getElementById("originalUrl").value;
-            if (!original_url) {
-                alert("Please enter a destination URL.");
-                window.document.getElementById("originalUrl").focus();
-                return
-            } else if (original_url.includes("nike.app.link")) {
-                alert("Links should not redirect to another Branch link.");
-                window.document.getElementById("originalUrl").focus();
+            var isValidURL = isWebUrlInRequestValid(original_url);
+            if (!isValidURL){
                 return
             }
 
             //get the x-callback-url and delete it if it's a PDP. These params are already hosted on the site so need to make sure we don't override the valid ones that are hosted.
             var deeplink_path = window.document.getElementById('deeplinkPath').value;
-            if (window.document.getElementById('page-type-selected').value == 'pdp'){
+            if (window.document.getElementById('page-type-selected').value == 'autoHosted'){
                 deeplink_path = "";
             }
             
@@ -97,14 +92,15 @@
             if (tag != null && tag != ""){
                 var tags = [tag];
                 linkData['tags'] = tags;
-                console.log(linkData);
             }
 
             //make the link
             branch.link(linkData, function(err, link) {
                 if (err == null) {
                     document.getElementById('generated3PLink').value = link;
-                    validateDeeplinkPathInResponse(link); // alert the user if the link has no deeplink_path
+                    setTimeout(function() {
+                      validateDeeplinkPathInResponse(link); // alert the user if the link has no deeplink_path
+                    }, 400);
                 } else {
                     document.getElementById('generated3PLink').value = err;
                 }
@@ -112,6 +108,36 @@
         }
 
         //======== Useful functions =========
+        // checks the web link is valid
+        function isWebUrlInRequestValid(link){
+            var validPageType = isCorrectPageType(link);
+            if (!link) {
+                //validate that it exists
+                alert("Please enter a destination URL.");
+                window.document.getElementById("originalUrl").focus();
+                return false;
+            } else if (link.includes("nike.app.link")) {
+                //validate that it isn't a branch link
+                alert("Links should not redirect to another Branch link.");
+                window.document.getElementById("originalUrl").focus();
+                return false;
+            } else if (!link.includes("nike.com")) {
+                //validate that it is a nike link
+                alert("Destination URL should be a Nike.com URL.");
+                window.document.getElementById("originalUrl").focus();
+                return false;
+            } else if (!validPageType){
+                //validate the page type matches
+                var sel = window.document.getElementById('page-type-selected');
+                var pageType = sel.options[sel.selectedIndex].text;
+                alert("Web URL does not match the page type you selected. Please make sure the web URL inputted is a " + pageType);
+                window.document.getElementById("originalUrl").focus();
+                return false;
+            } else {
+                return true;
+            }
+        }
+
         // checks the branch link for an x-callback-url
         function validateDeeplinkPathInResponse(link){
             var requestUrl = 'https://api2.branch.io/v1/url?url=' + link + '&branch_key=key_live_lgA7hM2dXL7OvAPCPXr5AmhjvDeljGUh';
@@ -132,6 +158,21 @@
         //check if the deeplink_path is obviously wrong
         function isInvalidDeeplinkPath(value){
             return (value.includes(" ") || value.endsWith("=") || value.endsWith("/"));
+        }
+
+        //check if the url matches the type of page selected
+        function isCorrectPageType(destinationUrl){
+            //pull the page type
+            var sel = window.document.getElementById('page-type-selected');
+            var pageType = sel.options[sel.selectedIndex].text;
+            if (pageType!=null && pageType != ""){
+                if (pageType.includes("PDP") && (!destinationUrl.includes("/t/") && !destinationUrl.includes("/t-dark/") )) {
+                    return false;
+                } else if (pageType.includes("PW") && (!destinationUrl.includes("/w/") && !destinationUrl.includes("/w-dark/"))){
+                    return false;
+                }
+            }
+            return true;
         }
     </script>
     <script type="text/javascript">
@@ -191,10 +232,9 @@
             <tbody>
                 <tr class="toggle">
                     <select id='page-type-selected' onchange="adjustDeeplinkPathRow(this.value)">
-                        <option value="pdp">Live PDP</option>
+                        <option value="autoHosted">Live PDP</option>
                         <option value="x-callback-url/product-details?style-color=[Add Style-Color Code]">Non-live PDP</option>
-                        <option value="x-callback-url/facet-search?name=[Add Product Wall Name]&hash=[Add Hash Value]">Product Wall (PW)</option>
-                        <option value="x-callback-url/facet-search?name=[Add Product Wall Name]&conceptid=[Add Hash Value]">Cloud Product Wall (PW)</option>
+                        <option value="autoHosted">Cloud Product Wall (PW)</option>
                         <option value="x-callback-url/display-thread?thread-id=">Editorial Thread</option>
                         <option value="x-callback-url/feed">User's Feed</option>
                         <option value="x-callback-url/cart">User's Cart</option>
