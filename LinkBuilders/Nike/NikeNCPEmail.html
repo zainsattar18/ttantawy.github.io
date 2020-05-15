@@ -28,8 +28,21 @@
 
     <!-- Branch web SDK -->
     <script type="text/javascript">
-    (function(b,r,a,n,c,h,_,s,d,k){if(!b[n]||!b[n]._q){for(;s<_.length;)c(h,_[s++]);d=r.createElement(a);d.async=1;d.src="https://cdn.branch.io/branch-latest.min.js";k=r.getElementsByTagName(a)[0];k.parentNode.insertBefore(d,k);b[n]=h}})(window,document,"script","branch",function(b,r){b[r]=function(){b._q.push([r,arguments])}},{_q:[],_v:1},"addListener applyCode autoAppIndex banner closeBanner closeJourney creditHistory credits data deepview deepviewCta first getCode init link logout redeem referrals removeListener sendSMS setBranchViewData setIdentity track validateCode trackCommerceEvent logEvent disableTracking getBrowserFingerprintId".split(" "), 0);
-    branch.init('key_live_lgA7hM2dXL7OvAPCPXr5AmhjvDeljGUh', function(err, data) {});
+        (function(b,r,a,n,c,h,_,s,d,k){if(!b[n]||!b[n]._q){for(;s<_.length;)c(h,_[s++]);d=r.createElement(a);d.async=1;d.src="https://cdn.branch.io/branch-latest.min.js";k=r.getElementsByTagName(a)[0];k.parentNode.insertBefore(d,k);b[n]=h}})(window,document,"script","branch",function(b,r){b[r]=function(){b._q.push([r,arguments])}},{_q:[],_v:1},"addListener applyCode autoAppIndex banner closeBanner closeJourney creditHistory credits data deepview deepviewCta first getCode init link logout redeem referrals removeListener sendSMS setBranchViewData setIdentity track validateCode trackCommerceEvent logEvent disableTracking getBrowserFingerprintId".split(" "), 0);
+        branch.init('key_live_lgA7hM2dXL7OvAPCPXr5AmhjvDeljGUh', function(err, data) {});
+
+        function populateEmailTypes () {
+            var select = document.getElementById("email-type-selected"); 
+            var options = ["Email_AdHoc/Other", " Email_Birthday", " Email_Clearance", " Email_Editorial", " Email_Event", " Email_Flash Sale", " Email_Free Shipping", " Email_JourneyEmail_Just Reduced", " Email_New Releases", " Email_Newsletter", " Email_Notify Me", " Email_Preheat", " Email_Product Detail", " Email_Product Launch", " Email_Promotion", " Email_Retail Event", " Email_Retail Remodel_Opening", " Email_Sports Moment", " Email_Style Guide", " Email_Survey", " Email_Weekly Launch"]; 
+
+            for(var i = 0; i < options.length; i++) {
+                var opt = options[i];
+                var el = document.createElement("option");
+                el.text = opt;
+                el.value = opt;
+                select.add(el);
+            }
+        }
     </script>
 
 
@@ -58,7 +71,12 @@
 
             //set the analytics parameters
             var feature = "Email Amazon SES";
-            var channel = "Email"
+            var selected_email = window.document.getElementById("email-type-selected").value;
+            var channel = "Email";
+            if (selected_email) {
+                var channel = selected_email;
+            }
+            
 
             //set the platform-specific redirects if they exist
             var app_stores_display = window.document.getElementById('redirect_params').style.display;
@@ -100,7 +118,7 @@
                     document.getElementById('generated3PLink').value = link;
                     setTimeout(function() {
                       validateDeeplinkPathInResponse(link); // alert the user if the link has no deeplink_path
-                    }, 400);
+                    }, 1500);
                 } else {
                     document.getElementById('generated3PLink').value = err;
                 }
@@ -202,7 +220,7 @@
     </script>
 </head>
 
-<body class="container">
+<body class="container" onload="populateEmailTypes()">
     <!-- Initialize clipboard.js -->
     <script>(function(){new Clipboard('#copy-button');})();</script>
 
@@ -226,7 +244,17 @@
     </section>
 
     <section class="container" id="link-creation">
-        <!-- Table for user input -->
+        <!-- Tables for user input -->
+        <h3 class="toggle">Choose the page type</h3>
+        <table>
+            <tbody>
+                <tr class="toggle">
+                    <select id='email-type-selected'>
+                    </select>
+                </tr>
+            </tbody>
+        </table>
+        <br>
         <h3 class="toggle">Choose the page type</h3>
         <table>
             <tbody>
