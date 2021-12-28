@@ -1,0 +1,163 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>NIKE CART LINK CREATOR</title>
+    <link rel="icon" href="https://branch.io/img/press/kit/badge-black.png" />
+    <link rel="stylesheet" href="style.css" />
+
+    <!-- jQuery Library via Google CDN -->
+    <script src="https://ajax.googleapis.com/ajax/libs/jquery/1.12.4/jquery.min.js"></script>
+
+    <!-- Latest compiled and minified CSS -->
+    <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/css/bootstrap.min.css" integrity="sha384-BVYiiSIFeK1dGmJRAkycuHAHRg32OmUcww7on3RYdg4Va+PmSTsz/K68vbdEjh4u" crossorigin="anonymous">
+
+    <!-- Optional theme -->
+    <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/css/bootstrap-theme.min.css" integrity="sha384-rHyoN1iRsVXV4nD0JutlnGaslCJuC7uwjduW9SVrLvRYooPp2bWYgmgJQIXwl/Sp" crossorigin="anonymous">
+
+    <!-- Latest compiled and minified JavaScript -->
+    <script src="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/js/bootstrap.min.js" integrity="sha384-Tc5IQib027qvyjSMfHjOMaLkfuWVxZxUPnCJA7l2mCWNIpG9mGCD8wGNIcPD7Txa" crossorigin="anonymous"></script>
+
+    <!-- Import clipboard.js -->
+    <script src="https://cdn.jsdelivr.net/npm/clipboard@1/dist/clipboard.min.js"></script>
+
+    <!-- Import Papa Parse -->
+    <!-- <script src="PapaParse-4.3.2/papaparse.min.js"></script> -->
+
+    <!-- Import FileSaver.js -->
+    <!-- <script src="FileSaver.js-master/FileSaver.min.js"></script> -->
+
+    <!-- Branch web SDK -->
+    <script type="text/javascript">
+    (function(b,r,a,n,c,h,_,s,d,k){if(!b[n]||!b[n]._q){for(;s<_.length;)c(h,_[s++]);d=r.createElement(a);d.async=1;d.src="https://cdn.branch.io/branch-latest.min.js";k=r.getElementsByTagName(a)[0];k.parentNode.insertBefore(d,k);b[n]=h}})(window,document,"script","branch",function(b,r){b[r]=function(){b._q.push([r,arguments])}},{_q:[],_v:1},"addListener applyCode autoAppIndex banner closeBanner closeJourney creditHistory credits data deepview deepviewCta first getCode init link logout redeem referrals removeListener sendSMS setBranchViewData setIdentity track validateCode trackCommerceEvent logEvent disableTracking getBrowserFingerprintId".split(" "), 0);
+    branch.init('key_live_lgA7hM2dXL7OvAPCPXr5AmhjvDeljGUh', function(err, data) {});
+    </script>
+
+
+    <!-- Script to generate short links based on user inputs -->
+    <script>
+        function generateLink() {
+            var countryDict = ['AE ':'www.nike.com/ae/cart', 'AT ':' www.nike.com/at/cart', 'AU ':' www.nike.com/au/cart', 'BE ':' www.nike.com/be/cart', 'BE ':' www.nike.com/be/de/cart', 'BE ':' www.nike.com/be/en/cart', 'BE ':' www.nike.com/be/fr/cart', 'BG ':' www.nike.com/bg/cart', 'CA ':' www.nike.com/ca/cart', 'CA ':' www.nike.com/ca/fr/cart', 'CH ':' www.nike.com/ch/cart', 'CH ':' www.nike.com/ch/en/cart', 'CH ':' www.nike.com/ch/fr/cart', 'CH ':' www.nike.com/ch/it/cart', 'CL ':' www.nike.com/cl/cart', 'CN ':' www.nike.com/cn/cart', 'CZ ':' www.nike.com/cz/cart', 'CZ ':' www.nike.com/cz/en/cart', 'DE ':' www.nike.com/de/cart', 'DK ':' www.nike.com/dk/cart', 'DK ':' www.nike.com/dk/en/cart', 'EG ':' www.nike.com/eg/cart', 'ES ':' www.nike.com/es/cart', 'ES ':' www.nike.com/es/ca/cart', 'FI ':' www.nike.com/fi/cart', 'FR ':' www.nike.com/fr/cart', 'GB ':' www.nike.com/gb/cart', 'GR ':' www.nike.com/gr/cart', 'HR ':' www.nike.com/hr/cart', 'HU ':' www.nike.com/hu/cart', 'HU ':' www.nike.com/hu/en/cart', 'ID ':' www.nike.com/id/cart', 'IE ':' www.nike.com/ie/cart', 'IL ':' www.nike.com/il/cart', 'IN ':' www.nike.com/in/cart', 'IT ':' www.nike.com/it/cart', 'JP ':' www.nike.com/jp/cart', 'JP ':' www.nike.com/jp/en/cart', 'LU ':' www.nike.com/lu/cart', 'LU ':' www.nike.com/lu/de/cart', 'LU ':' www.nike.com/lu/en/cart', 'MA ':' www.nike.com/ma/cart', 'MA ':' www.nike.com/ma/en/cart', 'MX ':' www.nike.com/mx/cart', 'MY ':' www.nike.com/my/cart', 'NL ':' www.nike.com/nl/cart', 'NL ':' www.nike.com/nl/en/cart', 'NO ':' www.nike.com/no/cart', 'NO ':' www.nike.com/no/en/cart', 'NZ ':' www.nike.com/nz/cart', 'PH ':' www.nike.com/ph/cart', 'PL ':' www.nike.com/pl/cart', 'PR ':' www.nike.com/pr/cart', 'PT ':' www.nike.com/pt/cart', 'PT ':' www.nike.com/pt/en/cart', 'RO ':' www.nike.com/ro/cart', 'RU ':' www.nike.com/ru/cart', 'SA ':' www.nike.com/sa/cart', 'SE ':' www.nike.com/se/cart', 'SE ':' www.nike.com/se/en/cart', 'SG ':' www.nike.com/sg/cart', 'SI ':' www.nike.com/si/cart', 'SK ':' www.nike.com/sk/cart', 'TH ':' www.nike.com/th/cart', 'TR ':' www.nike.com/tr/cart', 'TW ':' www.nike.com/tw/cart', 'US ':' www.nike.com//cart', 'US ':' www.nike.com/us/es/cart', 'VN ':' www.nike.com/vn/cart', 'ZA ':' www.nike.com/za/cart'];
+            var original_url = window.document.getElementById("originalUrl").value;
+            if (!original_url) {
+                alert("Please enter a destination URL.");
+                window.document.getElementById("originalUrl").focus();
+                return
+            } else if (original_url.includes("nike.app.link")) {
+                alert("Links should not redirect to another Branch link.");
+                window.document.getElementById("originalUrl").focus();
+                return
+            }
+            
+            var i;
+            for (i = 0; i < cars.length; i++) {
+              text += cars[i] + "<br>";
+            }
+
+            var feature = "NCP Email";
+            var channel = "Cart Test";
+            var linkData = {
+                "feature": feature,
+                "channel": channel,
+                "data": {
+                    "$ios_url": ios,
+                    "$android_url": android,
+                    "$desktop_url": original_url,
+                    "$fallback_url": original_url,
+                    "$canonical_url": original_url,
+                    "$og_title" : "Nike",
+                    "$uri_redirect_mode":2
+
+                }
+            };
+            branch.link(linkData, function(err, link) {
+                if (err == null) {
+                    console.log(link);
+                    document.getElementById('generated3PLink').value = link;
+                } else {
+                    console.log(err);
+                    document.getElementById('generated3PLink').value = err;
+                }
+            });
+        }
+        // Removes a row
+        function removeRow() {
+            rowCount = window.document.getElementById('redirect_params').rows.length;
+            if (rowCount > 1) {
+                $(`#row-${rowCount}`).remove();
+                $(`#row-${window.document.getElementById('redirect_params').rows.length}`).remove();
+            }
+        }
+        </script>
+</head>
+
+<body class="container">
+    <!-- Initialize clipboard.js -->
+    <script>(function(){new Clipboard('#copy-button');})();</script>
+
+    <div>
+        </br>
+        <img src="https://branch.io/img/logo-dark.svg" style="width:100px;">
+        </br>
+        </br>
+        <h1 style="display:inline; vertical-align:middle">Nike Social Link Creator</h1>
+    </div>
+
+    <!-- Description for one-off link creation -->
+    <section class="container toggle" id="description_oneoff">
+        <p><ol>
+            <li><strong>[REQUIRED]</strong> Enter the web URL to convert and the CP Code</li>
+            <li> To send mobile users without the app to web, click "Remove App Store redirects"</li>
+            <li>Click "Create Social Link" to generate a Branch link</li>
+            <li><strong>[To debug deep links]</strong> Add "?debug=1" to the link and paste it into the browser</li>
+        </ol></p>
+    </section>
+
+    <section class="container" id="link-creation">
+        <!-- Table for user input -->
+
+        <h3 class="toggle">Set URL</h3>
+
+        <table>
+            <tbody>
+                <tr class="toggle">
+                    <td><label style="margin-right: 10px">Enter a web URL</label></td>
+                    <td><input class="form-control" style="width:500px" id="originalUrl" type="text" placeholder="i.e., https://www.nike.com/t/air-jordan-4-retro-flyknit-mens-shoe-vTzTNn/AQ3559-600"/></td>
+                </tr>
+            </tbody>
+        </table>
+
+        <h3 class="toggle">Configure Link Behavior</h3>
+
+        <!-- Deep linking parameters table -->
+        <table id="redirect_params" class="toggle">
+            <tr id="row-1">
+                <td><label style="margin-right: 10px">Send users to the App/Play Stores if they don't have the app installed?</label></td>
+                <td>
+
+                    <label class="switch">
+                    <input id="app-store-checkbox" type="checkbox">
+                    <span class="slider round"></span>
+                    </label>
+            </tr>
+        </table>
+<!-- 
+        <button class="btn toggle" id="remove-query-button" style="background-color:#d3d3d3; display:inline; margin-top: 5px;" onclick="removeRow()">Remove App Store redirects</button> -->
+        <br>
+
+    </section>
+
+    <section>
+        <br>
+        <br>
+        <div class="text-center"><button class="form-control toggle" style="float:none; background-color:#89cff0; color: white; font-weight: bold;" onclick="generateLink()">Create Social Link</button></div>
+        <br>
+    </section>
+
+    <section class="container toggle" id="linkOutput">
+        <h3>Generated Social Link
+        <button class="btn" id="copy-button" style="background-color:#d3d3d3; display:inline;" data-clipboard-target="#generated3PLink">Copy Link</button>
+        </h3>
+        <textarea class="form-control" style="height:100px; margin-bottom:5%;" id="generated3PLink" type="text"></textarea>
+    </section>
+</body>
+</html>

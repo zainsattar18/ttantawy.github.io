@@ -36,13 +36,17 @@
   });
   branch.setBranchViewData({
     data: {
-      'custom_data': 'SetDataTest'
+      'custom_data': 'SetDataTest',
+      'restaurant_id':12345,
+      'partner_type':'special'
     }
   });
-  branch.setIdentity("suuid", (err) => console.error(err));
-  // var thisListener = function(event, data) { 
-  //     sendData(event, data);
-  // }
+  var thisListener = function(event, data) { 
+      window.journeyData = data;
+      console.log("event " + JSON.stringify(event));
+      console.log("data " + JSON.stringify(data));
+      // sendData(event, data);
+  }
 
   // branch.addListener('didShowJourney', thisListener); //A listener for a Journey impression
   function sendData (event, data) {
@@ -67,7 +71,7 @@
     );
   };
 
-    // branch.addListener('didClickJourneyCTA', thisListener); //A listener for clicking the Journeys CTA
+    branch.addListener('didShowJourney', thisListener); //A listener for showing a banner
     
     // branch.addListener('didClickJourneyClose', thisListener); //A listener for someone manually dismissing the Journey
     //key_live_gchnKkd3l3m9YBPP2d73jmfejkcgVjgM - BMF key
@@ -136,20 +140,18 @@
   };
   function setTheIdentity () {
     console.log("setting the identity");
-    var timestamp = Math.round(+new Date()/1000);
-    var id = timestamp.toString();
-    branch.setIdentity(id, function (err, data) {
+    // var timestamp = Math.round(+new Date()/1000);
+    // var id = timestamp.toString();
+    branch.setIdentity("suuid", function (err, data) {
       console.log(err, data);
     });
-    console.log(document.cookie);
-    // var name = "identity_id";
-    // var value = "; " + document.cookie;
-    // var parts = value.split("; " + name + "=");
-    // var readID = "";
-    // if (parts.length == 2) {
-    //   var readID = parts.pop().split(";").shift();
-    // }
-    // console.log("readID = " + readID);
+  };
+
+  function logTheUserOut () {
+    console.log("logging out identity");
+    branch.logout(function(err){
+      console.log(err);
+    });
   };
 </script>
 <title>Tarek T</title>
@@ -194,10 +196,19 @@
       </div>
       <div class="row col-lg-8 col-lg-offset-2">
         <div class="group">
+         <h4>Log Out</h4>
+          <button class="btn btn-info" onclick="logTheUserOut()">Logout</button>
+        </div>
+      </div>
+      </section>
+      <section>
+      <div class="row col-lg-8 col-lg-offset-2">
+        <div class="group">
          <h4>Test Links:</h4>
           <button class="btn btn-info" onclick="window.location.href='https://bit.ly/2RHntbL'">Bitly Link</button>
         </div>
       </div>
+      <br>
       <div class="row col-lg-8 col-lg-offset-2">
         <div class="group">
           <button class="btn btn-info" onclick="window.location.href='http://click.cameo-email.com/?qs=c416ba0fc68cf4d3a1740255a03c8e889b776fc7d471c4bd1b924b1d825d8440e72f82c98547ff22269709dbcea8e6d866dad8ca555ee8d66447c8a96ac8d876'">Cameo Email Link</button>
